@@ -3,8 +3,8 @@ server:
 
 eureka:
   client:
-    register-with-eureka: false
-    fetch-registry: false
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
 
@@ -13,12 +13,33 @@ spring:
     name: api-gateway-service
   cloud:
     gateway:
+      default-filters:
+        - name: GlobalFilter # Global filter class 명
+          args: # 파라미터로 전달될 값
+            message: hi global gateway
+            preLogger: true
+            postLogger: true
       routes:
         - id: first-service
-          uri: http://localhost:8081/
+#          uri: http://localhost:8081/
+          uri: lb://MY-FIRST-SERVICE
           predicates:
             - Path= /first-service/**
+          filters:
+            - AddRequestHeader= first-request, first-request-header2
+            - AddResponseHeader= first-response, first-response-header2
+            - CustomFilter
         - id: second-service
-          uri: http://localhost:8082/
+#          uri: http://localhost:8082/
+          uri: lb://MY-SECOND-SERVICE
           predicates:
             - Path= /second-service/**
+          filters:
+            - AddRequestHeader= second-request, second-request-header2
+            - AddResponseHeader= second-response, second-response-header2
+            - name: CustomFilter
+            - name: LoggingFilter
+              args:
+                baseMessage: Hi, there.
+                preLogger: true
+                postLogger: true
