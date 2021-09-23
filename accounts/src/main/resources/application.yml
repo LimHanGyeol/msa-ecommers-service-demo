@@ -4,6 +4,17 @@ server:
 spring:
   application:
     name: accounts-service
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
 eureka:
   instance:
@@ -13,3 +24,6 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+greeting:
+  message: Welcome to the Simple E-commerce.
