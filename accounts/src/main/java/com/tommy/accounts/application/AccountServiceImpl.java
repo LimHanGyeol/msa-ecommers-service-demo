@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -26,6 +28,11 @@ public class AccountServiceImpl implements AccountService {
         Account account = new Account(accountDto);
         account.updateEncryptedPassword(passwordEncoder.encode(accountDto.getPassword()));
         Account savedAccount = accountRepository.save(account);
-        return new AccountDto(savedAccount);
+        return new AccountDto(savedAccount, Collections.emptyList());
+    }
+
+    @Override
+    public List<Account> findAllAccount() {
+        return accountRepository.findAll();
     }
 }

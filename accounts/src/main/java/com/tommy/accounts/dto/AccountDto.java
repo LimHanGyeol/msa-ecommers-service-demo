@@ -2,9 +2,11 @@ package com.tommy.accounts.dto;
 
 import com.tommy.accounts.domain.Account;
 import com.tommy.accounts.vo.AccountCreateRequest;
+import com.tommy.accounts.vo.AccountOrdersResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -16,6 +18,8 @@ public class AccountDto {
     private LocalDateTime createdAt;
     private String encryptedPassword;
 
+    private List<AccountOrdersResponse> accountOrdersResponses;
+
     public AccountDto(String email, String name, String password) {
         this.email = email;
         this.name = name;
@@ -23,11 +27,12 @@ public class AccountDto {
         this.createdAt = LocalDateTime.now();;
     }
 
-    public AccountDto(Account account) {
+    public AccountDto(Account account, List<AccountOrdersResponse> accountOrdersResponses) {
         this.email = account.getEmail();
         this.name = account.getName();
-        this.userId = account.getUserId();
+        this.userId = account.getAccountCode();
         this.encryptedPassword = account.getEncryptedPassword();
+        this.accountOrdersResponses = accountOrdersResponses;
     }
 
     public AccountDto(AccountCreateRequest accountCreateRequest) {

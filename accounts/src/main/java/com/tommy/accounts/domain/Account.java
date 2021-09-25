@@ -25,22 +25,22 @@ public class Account {
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String userId;
+    private String accountCode;
 
     @Column(nullable = false)
     private String encryptedPassword;
 
-    public Account(String email, String name, String userId, String encryptedPassword) {
+    public Account(String email, String name, String accountCode, String encryptedPassword) {
         this.email = email;
         this.name = name;
-        this.userId = userId;
+        this.accountCode = accountCode;
         this.encryptedPassword = encryptedPassword;
     }
 
     public Account(AccountDto accountDto) {
         this.email = accountDto.getEmail();
         this.name = accountDto.getName();
-        this.userId = accountDto.getUserId();
+        this.accountCode = accountDto.getUserId();
         this.encryptedPassword = accountDto.getEncryptedPassword();
     }
 
