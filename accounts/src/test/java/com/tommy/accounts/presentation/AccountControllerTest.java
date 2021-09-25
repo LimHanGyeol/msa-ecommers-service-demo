@@ -1,6 +1,7 @@
 package com.tommy.accounts.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tommy.accounts.domain.Account;
 import com.tommy.accounts.domain.AccountRepository;
 import com.tommy.accounts.vo.AccountCreateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -69,6 +72,28 @@ class AccountControllerTest {
         // Assert
         response.andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    void sut_returns_get_account_by_account_code() throws Exception {
+        // Arrange
+        AccountCreateRequest accountCreateRequest1 = createAccountRequest("hang19663@gmail.com");
+        createAccountRequestMapping(accountCreateRequest1);
+
+        List<Account> accounts = accountRepository.findAll();
+        Account account = accounts.get(0);
+
+        // Act
+        ResultActions response = mockMvc.perform(get("/accounts/{accountCode}", account.getAccountCode())
+                .accept(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        // Assert
+        response.andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("email").value("hang19663@gmail.com"))
+                .andExpect(jsonPath("accountCode").value(account.getAccountCode()))
+                .andExpect(jsonPath("name").value("limhangyeol"));
     }
 
     private ResultActions createAccountRequestMapping(AccountCreateRequest accountCreateRequest) throws Exception {

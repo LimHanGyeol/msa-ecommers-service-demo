@@ -43,7 +43,7 @@ class AccountServiceImplTest {
 
         // Assert
         assertThat(accountDto).isNotEqualTo(createdAccount);
-        assertThat(createdAccount.getUserId()).isNotBlank();
+        assertThat(createdAccount.getAccountCode()).isNotBlank();
         assertThat(createdAccount.getEncryptedPassword()).isNotEqualTo(accountDto.getPassword());
     }
 
@@ -66,6 +66,24 @@ class AccountServiceImplTest {
                 .map(Account::getEmail)
                 .collect(Collectors.toList());
         assertThat(accountsEmails).containsExactly("hang19663@gmail.com", "test11@gmail.com");
+    }
+
+    @Test
+    void sut_returns_get_account_by_account_code() {
+        // Arrange
+        AccountDto accountDto1 = createAccountDto("hang19663@gmail.com");
+        accountService.createAccount(accountDto1);
+
+        List<Account> accounts = accountRepository.findAll();
+        Account account = accounts.get(0);
+
+        // Act
+        AccountService sut = accountService;
+        AccountDto accountDto = sut.getAccountByAccountCode(account.getAccountCode());
+
+        // Assert
+        assertThat(accountDto.getAccountCode()).isEqualTo(account.getAccountCode());
+        assertThat(accountDto.getEmail()).isEqualTo("hang19663@gmail.com");
     }
 
     private AccountDto createAccountDto(String email) {

@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface AccountService {
     AccountDto createAccount(AccountDto accountDto);
+    AccountDto getAccountByAccountCode(String accountCode);
     List<Account> findAllAccount();
 }

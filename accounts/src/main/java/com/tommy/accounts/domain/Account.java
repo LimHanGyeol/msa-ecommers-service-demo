@@ -40,7 +40,7 @@ public class Account {
     public Account(AccountDto accountDto) {
         this.email = accountDto.getEmail();
         this.name = accountDto.getName();
-        this.accountCode = accountDto.getUserId();
+        this.accountCode = accountDto.getAccountCode();
         this.encryptedPassword = accountDto.getEncryptedPassword();
     }
 
