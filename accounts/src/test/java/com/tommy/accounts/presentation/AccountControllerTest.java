@@ -1,7 +1,10 @@
 package com.tommy.accounts.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tommy.accounts.domain.Account;
+import com.tommy.accounts.domain.AccountRepository;
 import com.tommy.accounts.vo.AccountCreateRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,6 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,30 +31,83 @@ class AccountControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @BeforeEach
+    void setUp() {
+        accountRepository.deleteAll();
+    }
+
     @Test
     void sut_returns_created_account() throws Exception {
         // Arrange
-        AccountCreateRequest accountCreateRequest = createAccountRequest();
+        AccountCreateRequest accountCreateRequest = createAccountRequest("hang19663@gmail.com");
 
         // Act
-        ResultActions response = mockMvc.perform(post("/accounts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(accountCreateRequest)
-                )
-        ).andDo(print());
+        ResultActions response = createAccountRequestMapping(accountCreateRequest);
 
         // Assert
         response.andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(jsonPath("email").value("hang19663@gmail.com"))
                 .andExpect(jsonPath("name").value("limhangyeol"))
-                .andExpect(jsonPath("userId").exists());
+                .andExpect(jsonPath("accountCode").exists());
     }
 
-    private AccountCreateRequest createAccountRequest() {
+    @Test
+    void sut_returns_get_accounts() throws Exception {
+        // Arrange
+        AccountCreateRequest accountCreateRequest1 = createAccountRequest("hang19663@gmail.com");
+        createAccountRequestMapping(accountCreateRequest1);
+
+        AccountCreateRequest accountCreateRequest2 = createAccountRequest("test11@naver.com");
+        createAccountRequestMapping(accountCreateRequest2);
+
+        // Act
+        ResultActions response = mockMvc.perform(get("/accounts")
+                .accept(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        // Assert
+        response.andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    void sut_returns_get_account_by_account_code() throws Exception {
+        // Arrange
+        AccountCreateRequest accountCreateRequest1 = createAccountRequest("hang19663@gmail.com");
+        createAccountRequestMapping(accountCreateRequest1);
+
+        List<Account> accounts = accountRepository.findAll();
+        Account account = accounts.get(0);
+
+        // Act
+        ResultActions response = mockMvc.perform(get("/accounts/{accountCode}", account.getAccountCode())
+                .accept(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        // Assert
+        response.andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("email").value("hang19663@gmail.com"))
+                .andExpect(jsonPath("accountCode").value(account.getAccountCode()))
+                .andExpect(jsonPath("name").value("limhangyeol"));
+    }
+
+    private ResultActions createAccountRequestMapping(AccountCreateRequest accountCreateRequest) throws Exception {
+        return mockMvc.perform(post("/accounts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(accountCreateRequest)
+                )
+        ).andDo(print());
+    }
+
+    private AccountCreateRequest createAccountRequest(String email) {
         return new AccountCreateRequest(
-                "hang19663@gmail.com",
+                email,
                 "limhangyeol",
                 "password-origin!@"
         );
