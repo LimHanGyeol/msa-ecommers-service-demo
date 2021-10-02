@@ -16,6 +16,6 @@ public class HealthCheckController {
     @GetMapping("/health_check")
     public String healthCheck() {
         String port = environment.getProperty("local.server.port");
-        return String.format("It's Working in Catalog Service on PORT %s", port);
+        return String.format("It's Working in Orders Service on PORT %s", port);
     }
 }
