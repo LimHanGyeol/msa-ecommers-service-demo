@@ -5,6 +5,8 @@ import com.tommy.accounts.domain.AccountRepository;
 import com.tommy.accounts.dto.AccountDto;
 import com.tommy.accounts.vo.AccountOrdersResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,14 @@ public class AccountServiceImpl implements AccountService {
         account.updateEncryptedPassword(passwordEncoder.encode(accountDto.getPassword()));
         Account savedAccount = accountRepository.save(account);
         return new AccountDto(savedAccount, Collections.emptyList());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
+        return new User(account.getEmail(), account.getEncryptedPassword(),
+                true, true, true, true, List.of());
     }
 
     @Override
