@@ -23,8 +23,27 @@ spring:
         - id: accounts-service
           uri: lb://ACCOUNTS-SERVICE
           predicates:
+            - Path= /accounts-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+#            - RewritePath=/accounts-service/(?<segment>.*), /$\{segment}
+        - id: accounts-service
+          uri: lb://ACCOUNTS-SERVICE
+          predicates:
+            - Path= /accounts-service/accounts
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+#            - RewritePath=/accounts-service/(?<segment>.*), /$\{segment}
+        - id: accounts-service
+          uri: lb://ACCOUNTS-SERVICE
+          predicates:
             - Path= /accounts-service/**
-
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+#            - RewritePath=/accounts-service/(?<segment>.*), /$\{segment}
         - id: catalogs-service
           uri: lb://CATALOGS-SERVICE
           predicates:

@@ -10,4 +10,5 @@ public interface AccountService extends UserDetailsService {
     AccountDto createAccount(AccountDto accountDto);
     AccountDto getAccountByAccountCode(String accountCode);
     List<Account> findAllAccount();
+    AccountDto getUserDetailsByEmail(String username);
 }

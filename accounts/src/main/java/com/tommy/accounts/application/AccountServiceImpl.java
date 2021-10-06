@@ -57,4 +57,10 @@ public class AccountServiceImpl implements AccountService {
     public List<Account> findAllAccount() {
         return accountRepository.findAll();
     }
+
+    @Override
+    public AccountDto getUserDetailsByEmail(String email) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Account not found!"));
+        return new AccountDto(account, List.of());
+    }
 }
