@@ -43,6 +43,7 @@ spring:
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie
+            - AuthorizationHeaderFilter
 #            - RewritePath=/accounts-service/(?<segment>.*), /$\{segment}
         - id: catalogs-service
           uri: lb://CATALOGS-SERVICE
@@ -77,3 +78,6 @@ spring:
                 baseMessage: Hi, there.
                 preLogger: true
                 postLogger: true
+
+token:
+  secret: accounts-token
